@@ -577,7 +577,28 @@ TOOLSETS = {
         "description": "Gateway toolset - union of all messaging platform tools",
         "tools": [],
         "includes": ["hermes-telegram", "hermes-discord", "hermes-whatsapp", "hermes-slack", "hermes-signal", "hermes-bluebubbles", "hermes-homeassistant", "hermes-email", "hermes-sms", "hermes-mattermost", "hermes-matrix", "hermes-dingtalk", "hermes-feishu", "hermes-wecom", "hermes-wecom-callback", "hermes-weixin", "hermes-qqbot", "hermes-webhook", "hermes-yuanbao"]
-    }
+    },
+
+    "coding-worker": {
+        "description": (
+            "Coding delegation toolset — dispatches tasks to Claude Code CLI "
+            "(headless, in a git worktree) on approved repositories under "
+            "allowed_repo_roots. Gated: only active when the claude binary is "
+            "resolvable (check_fn in tools/claude_code_tool.py)."
+        ),
+        "tools": ["claude_code"],
+        "includes": [],
+    },
+
+    "code-dispatch": {
+        "description": (
+            "Cloud dispatch toolset — queues a coding task to the user's PC via "
+            "a GitHub queue instead of running locally. For cloud/server Shiri so "
+            "code work runs on the user's own machine, never on the server."
+        ),
+        "tools": ["dispatch_code_task"],
+        "includes": [],
+    },
 }
 
 

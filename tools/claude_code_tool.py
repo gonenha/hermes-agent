@@ -198,14 +198,35 @@ def _validate_repo_dir(repo_dir: str, allowed_repo_roots: List[str]) -> Optional
 # ---------------------------------------------------------------------------
 
 def _build_scoped_env() -> Dict[str, str]:
-    """Build subprocess env: inherit os.environ MINUS API key vars.
+    """Build subprocess env: inherit os.environ MINUS API key vars, then
+    supplement auth tokens from Hermes' .env reader.
 
     Per security requirements:
     - Strip ANTHROPIC_API_KEY and ANTHROPIC_TOKEN (would override OAuth, billing risk)
     - Pass through CLAUDE_CODE_OAUTH_TOKEN and GH_TOKEN/GITHUB_TOKEN
+
+    Hermes does not propagate ~/.hermes/.env into os.environ, so worker auth
+    tokens (CLAUDE_CODE_OAUTH_TOKEN, GH_TOKEN, GITHUB_TOKEN) would be absent
+    from the subprocess environment if sourced only from os.environ.  We
+    therefore resolve each missing token via get_env_value (hermes_cli/config.py)
+    which reads ~/.hermes/.env directly.  ANTHROPIC keys are never injected.
     """
     blocked = {"ANTHROPIC_API_KEY", "ANTHROPIC_TOKEN"}
     env = {k: v for k, v in os.environ.items() if k not in blocked}
+
+    # Inject auth tokens that may live only in ~/.hermes/.env
+    _AUTH_TOKENS = ("CLAUDE_CODE_OAUTH_TOKEN", "GH_TOKEN", "GITHUB_TOKEN")
+    try:
+        from hermes_cli.config import get_env_value  # type: ignore
+        for key in _AUTH_TOKENS:
+            if not env.get(key):
+                value = get_env_value(key)
+                if value:
+                    env[key] = value
+    except Exception:
+        # Import may fail in isolated test contexts — proceed without injection
+        pass
+
     return env
 
 

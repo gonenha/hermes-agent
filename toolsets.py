@@ -543,6 +543,16 @@ TOOLSETS = {
         "tools": ["claude_code"],
         "includes": [],
     },
+
+    "code-dispatch": {
+        "description": (
+            "Cloud dispatch toolset — queues a coding task to the user's PC via "
+            "a GitHub queue instead of running locally. For cloud/server Shiri so "
+            "code work runs on the user's own machine, never on the server."
+        ),
+        "tools": ["dispatch_code_task"],
+        "includes": [],
+    },
 }
 
 

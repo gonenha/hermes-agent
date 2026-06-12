@@ -330,7 +330,7 @@ def _dispatch_code_task_handler(args: dict, **kwargs) -> str:
 
 registry.register(
     name="dispatch_code_task",
-    toolset="coding-worker",
+    toolset="code-dispatch",
     schema=DISPATCH_CODE_TASK_SCHEMA,
     handler=_dispatch_code_task_handler,
     check_fn=_check_queue_available,
